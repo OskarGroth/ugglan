@@ -9,10 +9,11 @@ github "hedviginsurance/form" "master"
 github "SnapKit/SnapKit" >= 4.0.0
 github "hedviginsurance/flowfeedback" "master"
 github "hedviginsurance/UICollectionView-AnimatedScroll" "master"
-github "vtourraine/AcknowList" "master"
+github "vtourraine/AcknowList" "swift-4-2"
 
 binary "https://dl.google.com/dl/firebase/ios/carthage/FirebaseAnalyticsBinary.json"
 binary "https://dl.google.com/dl/firebase/ios/carthage/FirebaseDynamicLinksBinary.json"
 binary "https://dl.google.com/dl/firebase/ios/carthage/FirebaseFirestoreBinary.json"
 binary "https://dl.google.com/dl/firebase/ios/carthage/FirebaseRemoteConfigBinary.json"
+binary "https://dl.google.com/dl/firebase/ios/carthage/FirebaseMessagingBinary.json"
 

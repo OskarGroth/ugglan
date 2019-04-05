@@ -11,10 +11,13 @@ import Disk
 import Firebase
 import FirebaseAnalytics
 import FirebaseRemoteConfig
+import FirebaseInstanceID
+import FirebaseMessaging
 import Flow
 import Form
 import Presentation
 import UIKit
+import UserNotifications
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -56,9 +59,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func applicationWillTerminate(_: UIApplication) {
         applicationWillTerminateCallbacker.callAll()
     }
-
+    
     func application(
-        _: UIApplication,
+        _ application: UIApplication,
         didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]?
     ) -> Bool {
         FirebaseApp.configure()
@@ -124,7 +127,115 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
             TranslationsRepo.fetch()
         }
+        
+        Messaging.messaging().delegate = self
+        
+        if #available(iOS 10.0, *) {
+            // For iOS 10 display notification (sent via APNS)
+            UNUserNotificationCenter.current().delegate = self
+            
+            let authOptions: UNAuthorizationOptions = [.alert, .badge, .sound]
+            UNUserNotificationCenter.current().requestAuthorization(
+                options: authOptions,
+                completionHandler: {isGranted, error in
+                    DispatchQueue.main.async {
+                        UIApplication.shared.registerForRemoteNotifications()
+                    }
+            })
+        }
 
         return true
     }
+    
+    /*func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable : Any]) {
+        if let messageID = userInfo[gcmMessageIDKey] {
+            print("Message ID: \(messageID)")
+        }
+        
+        // Print full message.
+        print(userInfo)
+    }*/
+}
+
+@available(iOS 10, *)
+extension AppDelegate : UNUserNotificationCenterDelegate {
+    
+    func userNotificationCenter(_ center: UNUserNotificationCenter,
+                                willPresent notification: UNNotification,
+                                withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
+        let userInfo = notification.request.content.userInfo
+        
+        //print(userInfo)
+        
+        // Change this to your preferred presentation option
+        completionHandler([])
+    }
+    
+    func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
+        let userInfo = response.notification.request.content.userInfo
+        print(userInfo)
+        
+        //handleNotification(UIApplication.shared, userInfo: userInfo)
+        
+        if response.actionIdentifier  ==  "reply.action" {
+            if let textResponse =  response as? UNTextInputNotificationResponse {
+                let sendText =  textResponse.userText
+                print("Received text message: \(sendText)")
+            }
+        }
+        
+        completionHandler()
+    }
+    
+    func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
+        let deviceTokens = deviceToken.map {
+            return String(format: "%02.2hhx", $0)
+        }
+        let token = deviceTokens.joined()
+        print("\n\ndevice token ",token, "\n\n")
+        Messaging.messaging().apnsToken = deviceToken
+    }
+    
+    func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
+        print("big errors")
+    }
+}
+// [END ios_10_message_handling]
+
+extension AppDelegate : MessagingDelegate {
+    // [START refresh_token]
+    func messaging(_ messaging: Messaging, didReceiveRegistrationToken fcmToken: String) {
+        print("Firebase registration token: \(fcmToken)")
+        
+        let dataDict:[String: String] = ["token": fcmToken]
+        NotificationCenter.default.post(name: Notification.Name("FCMToken"), object: nil, userInfo: dataDict)
+        // TODO: If necessary send token to application server.
+        // Note: This callback is fired at each app startup and whenever a new token is generated.
+    }
+    
+    
+    // [END refresh_token]
+    // [START ios_10_data_message]
+    // Receive data messages on iOS 10+ directly from FCM (bypassing APNs) when the app is in the foreground.
+
+    func messaging(_ messaging: Messaging, didReceive remoteMessage: MessagingRemoteMessage) {
+        print("Firebase notification: \(remoteMessage.appData)")
+    }
+    
+    func showPushButtons(){
+        let replyAction = UNTextInputNotificationAction(
+            identifier: "reply.action",
+            title: "Reply to Hedvig",
+            textInputButtonTitle: "Send",
+            textInputPlaceholder: "Write here")
+        
+        let pushNotificationButtons = UNNotificationCategory(
+            identifier: "allreply.action",
+            actions: [replyAction],
+            intentIdentifiers: [],
+            options: [])
+        
+        UNUserNotificationCenter.current().setNotificationCategories([pushNotificationButtons])
+    }
+    // [END ios_10_data_message]
 }

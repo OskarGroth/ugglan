@@ -9,9 +9,10 @@ github "hedviginsurance/form" "master"
 github "SnapKit/SnapKit" >= 4.0.0
 github "hedviginsurance/flowfeedback" "master"
 github "hedviginsurance/UICollectionView-AnimatedScroll" "master"
-github "vtourraine/AcknowList" "master"
+github "vtourraine/AcknowList" "f16fed59b85d17309c0112fb00b482824225720d"
 github "uber/ios-snapshot-test-case" "master"
 github "daltoniam/Starscream" "3.0.6"
+github "adyen/adyen-ios"
 
 binary "https://dl.google.com/dl/firebase/ios/carthage/FirebaseAnalyticsBinary.json"
 binary "https://dl.google.com/dl/firebase/ios/carthage/FirebaseDynamicLinksBinary.json"

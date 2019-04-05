@@ -3,14 +3,14 @@ version: 2.2.0
 configurations:
   debug:
     overrides:
-      IPHONEOS_DEPLOYMENT_TARGET: "9.0"
+      IPHONEOS_DEPLOYMENT_TARGET: "10.3"
       PROVISIONING_PROFILE_SPECIFIER: "Ugglan Developer Profile"
       FRAMEWORK_SEARCH_PATHS:
         - $(inherited)
         - $(PROJECT_DIR)/Carthage/Build/iOS
   release:
     overrides:
-      IPHONEOS_DEPLOYMENT_TARGET: "9.0"
+      IPHONEOS_DEPLOYMENT_TARGET: "10.3"
       CODE_SIGN_IDENTITY: "iPhone Distribution: Hedvig AB (AW656G5PFM)"
       "CODE_SIGN_IDENTITY[sdk=iphoneos*]": "iPhone Distribution: Hedvig AB (AW656G5PFM)"
       PROVISIONING_PROFILE_SPECIFIER: "Ugglan - AdHoc 2"
@@ -107,7 +107,7 @@ targets:
       PRODUCT_BUNDLE_IDENTIFIER: com.hedvig.UITests
       TEST_TARGET_NAME: Ugglan
       SWIFT_VERSION: "4.2"
-      IPHONEOS_DEPLOYMENT_TARGET: "9.0"
+      IPHONEOS_DEPLOYMENT_TARGET: "10.3"
       OTHER_LDFLAGS: "$(OTHER_LDFLAGS) -ObjC"
       LD_RUNPATH_SEARCH_PATHS:
         - $(inherited)
@@ -142,6 +142,8 @@ targets:
           - $(SRCROOT)/Carthage/Build/iOS/Disk.framework
           - $(SRCROOT)/Carthage/Build/iOS/DynamicColor.framework
           - $(SRCROOT)/Carthage/Build/iOS/UICollectionView_AnimatedScroll.framework
+          - $(SRCROOT)/Carthage/Build/iOS/Adyen.framework
+          - $(SRCROOT)/Carthage/Build/iOS/AdyenInternal.framework
         outputs:
           - $(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/DeviceKit.framework
           - $(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/Apollo.framework
@@ -159,6 +161,8 @@ targets:
           - $(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/Disk.framework
           - $(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/DynamicColor.framework
           - $(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/UICollectionView_AnimatedScroll.framework
+          - $(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/Adyen.framework
+          - $(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/AdyenInternal.framework
     references:
       - sdkroot:UIKit.framework
       - location: Carthage/Build/iOS/DeviceKit.framework
@@ -195,9 +199,11 @@ targets:
       - location: Carthage/Build/iOS/Disk.framework
       - location: Carthage/Build/iOS/DynamicColor.framework
       - location: Carthage/Build/iOS/UICollectionView_AnimatedScroll.framework
+      - location: Carthage/Build/iOS/Adyen.framework
+      - location: Carthage/Build/iOS/AdyenInternal.framework
     configuration:
       INFOPLIST_FILE: Src/Info.plist
-      IPHONEOS_DEPLOYMENT_TARGET: "9.0"
+      IPHONEOS_DEPLOYMENT_TARGET: "10.3"
       SWIFT_VERSION: "4.2"
       PRODUCT_BUNDLE_IDENTIFIER: "com.hedvig.ugglan"
       DEVELOPMENT_TEAM: "AW656G5PFM"

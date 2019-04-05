@@ -30,7 +30,7 @@ extension MyPayment: Presentable {
 
         let form = FormView()
         bag += viewController.install(form)
-
+        
         let monthlyPaymentCircle = MonthlyPaymentCircle()
         bag += form.prepend(monthlyPaymentCircle)
 
@@ -60,6 +60,18 @@ extension MyPayment: Presentable {
             style: .normal
         )
         bag += form.append(buttonSection)
+        
+        bag += form.append(Spacing(height: 20))
+        
+        let adyenButtonSection = ButtonSection(
+            text: "Sätt upp kortbetalning",
+            style: .normal
+        )
+        bag += form.append(adyenButtonSection)
+        
+        bag += adyenButtonSection.onSelect.onValue { _ in
+            viewController.present(AdyenCardSetup())
+        }
 
         bag += client.watch(query: MyPaymentQuery()).onValueDisposePrevious { result in
             let innerBag = bag.innerBag()

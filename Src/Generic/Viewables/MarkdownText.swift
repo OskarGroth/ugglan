@@ -18,7 +18,8 @@ struct MarkdownText {
 
 extension MarkdownText: Viewable {
     func materialize(events: ViewableEvents) -> (UIView, Disposable) {
-        let view = UIView()
+        let view = UIScrollView()
+        view.alwaysBounceVertical = true
         
         let bag = DisposeBag()
     
@@ -50,7 +51,7 @@ extension MarkdownText: Viewable {
         bag += view.didLayoutSignal.onValue { _ in
             view.snp.remakeConstraints { make in
                 make.width.equalToSuperview()
-                make.height.equalToSuperview()
+                make.height.equalTo(markdownText.intrinsicContentSize.height)
             }
         }
         

@@ -20,7 +20,12 @@ extension CharityInformationBody: Viewable {
         let bag = DisposeBag()
         
         let body = MarkdownText(text: text, style: .bodyOffBlack)
-        bag += view.add(body)
+        
+        bag += view.add(body) { bodyText in
+            bodyText.snp.makeConstraints { make in
+                make.top.bottom.trailing.leading.equalToSuperview()
+            }
+        }
         
         bag += view.didLayoutSignal.onValue { _ in
             view.snp.remakeConstraints { make in

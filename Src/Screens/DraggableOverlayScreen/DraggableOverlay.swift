@@ -82,8 +82,14 @@ extension DraggableOverlay: Presentable {
         view.addSubview(overlay)
         
         let overlayHeight: CGFloat = round(self.heightPercentage * UIScreen.main.bounds.height)
+        let fullscreenOverlayHeight: CGFloat = UIScreen.main.bounds.height - 60
         let overshootHeight: CGFloat = 800
+        
         let dragLimit = overlayHeight - UIScreen.main.bounds.height + 60
+        let velocityFactor: CGFloat = 1.35
+        let slowVelocityFactor: CGFloat = 0.20
+        
+        var fullscreenMode: Bool = false
         
         overlay.snp.makeConstraints { make in
             make.width.equalToSuperview()
@@ -107,11 +113,16 @@ extension DraggableOverlay: Presentable {
         bag += panGestureRecognizer.signal(forState: .changed).onValue {
             let location = panGestureRecognizer.translation(in: view)
             
-            if (location.y < dragLimit) {
-                ease.velocity = panGestureRecognizer.velocity(in: view).y * 0.20
+            let hasPassedLimit = ease.targetValue! <= overlayCenter() + dragLimit
+            
+            if (hasPassedLimit) {
+                ease.velocity = panGestureRecognizer.velocity(in: view).y * slowVelocityFactor
                 ease.targetValue = overlayCenter() + dragLimit + location.y * 0.015
+            } else if (fullscreenMode) {
+                ease.velocity = panGestureRecognizer.velocity(in: view).y * velocityFactor
+                ease.targetValue = overlayCenter() + dragLimit + location.y
             } else {
-                ease.velocity = panGestureRecognizer.velocity(in: view).y * 1.35
+                ease.velocity = panGestureRecognizer.velocity(in: view).y * velocityFactor
                 ease.targetValue = overlayCenter() + location.y
             }
         }
@@ -180,7 +191,7 @@ extension DraggableOverlay: Presentable {
         
         embeddedChildScreen.view.snp.makeConstraints { make in
             make.width.equalToSuperview()
-            make.height.equalTo(overlayHeight)
+            make.height.equalTo(UIScreen.main.bounds.height - 60)
         }
         
         return (viewController, Future { completion in
@@ -192,13 +203,35 @@ extension DraggableOverlay: Presentable {
                 ease.targetValue = view.frame.height * 2
             }
             
+            func togglePreview() {
+                ease.targetValue = overlayCenter()
+            }
+            
+            func toggleFullScreen() {
+                ease.targetValue = overlayCenter() + dragLimit
+            }
+            
             bag += panGestureRecognizer.signal(forState: .ended).onValue { _ in
                 let velocity = panGestureRecognizer.velocity(in: view)
                 let translation = panGestureRecognizer.translation(in: view)
                 
-                if translation.y > (overlayHeight * 0.4) || velocity.y > 1300 {
+                let fastSwipe = velocity.y > 1300
+                let extraFastSwipe = velocity.y > 3100
+                let lowSwipe = fullscreenMode ?
+                    translation.y > (fullscreenOverlayHeight * 0.7)
+                    : translation.y > (overlayHeight * 0.3)
+                
+                if (lowSwipe) {
                     hideOverlay()
+                } else if (extraFastSwipe) {
+                    hideOverlay()
+                } else if (fastSwipe) {
+                    fullscreenMode ? togglePreview() : hideOverlay()
+                } else if (translation.y < -45) {
+                    toggleFullScreen()
                 }
+                
+                fullscreenMode = ease.targetValue! <= overlayCenter() + dragLimit
             }
             
             bag += dimmingViewTap.signal(forState: .recognized).onValue {

@@ -191,7 +191,7 @@ extension DraggableOverlay: Presentable {
         
         embeddedChildScreen.view.snp.makeConstraints { make in
             make.width.equalToSuperview()
-            make.height.equalTo(UIScreen.main.bounds.height - 60)
+            make.height.equalTo(UIScreen.main.bounds.height - 60 - 22)
         }
         
         return (viewController, Future { completion in

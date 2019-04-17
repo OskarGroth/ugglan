@@ -21,17 +21,13 @@ extension CharityInformationBody: Viewable {
         
         let body = MarkdownText(text: text, style: .bodyOffBlack)
         
-        bag += view.add(body) { bodyText in
-            bodyText.snp.makeConstraints { make in
-                make.top.bottom.trailing.leading.equalToSuperview()
-            }
-        }
+        bag += view.add(body)
         
         bag += view.didLayoutSignal.onValue { _ in
             view.snp.remakeConstraints { make in
                 make.width.equalToSuperview().inset(24)
                 make.height.equalToSuperview()
-                make.center.equalToSuperview()
+                make.centerX.equalToSuperview()
             }
         }
         

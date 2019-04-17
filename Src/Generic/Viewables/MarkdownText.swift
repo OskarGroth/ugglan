@@ -20,6 +20,7 @@ extension MarkdownText: Viewable {
     func materialize(events: ViewableEvents) -> (UIView, Disposable) {
         let view = UIScrollView()
         view.alwaysBounceVertical = true
+        view.showsVerticalScrollIndicator = false
         
         let bag = DisposeBag()
     
@@ -44,6 +45,11 @@ extension MarkdownText: Viewable {
                 make.width.equalToSuperview()
                 make.centerX.equalToSuperview()
             }
+            
+            view.contentSize = CGSize(
+                width: markdownText.intrinsicContentSize.width,
+                height: markdownText.intrinsicContentSize.height
+            )
         }
         
         view.addSubview(markdownText)
@@ -51,7 +57,7 @@ extension MarkdownText: Viewable {
         bag += view.didLayoutSignal.onValue { _ in
             view.snp.remakeConstraints { make in
                 make.width.equalToSuperview()
-                make.height.equalTo(markdownText.intrinsicContentSize.height)
+                make.height.equalToSuperview()
             }
         }
         

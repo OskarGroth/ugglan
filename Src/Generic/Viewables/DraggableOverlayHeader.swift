@@ -33,7 +33,7 @@ extension DraggableOverlayHeader: Viewable {
                 make.width.equalToSuperview().inset(24)
                 make.height.equalTo(24)
                 make.centerX.equalToSuperview()
-                make.bottom.equalTo(0)
+                make.bottom.equalTo(-8)
             }
         }
         
@@ -46,7 +46,7 @@ extension DraggableOverlayHeader: Viewable {
         
         view.makeConstraints(wasAdded: events.wasAdded).onValue { make, _ in
             make.width.equalToSuperview()
-            make.height.equalTo(56)
+            make.height.equalTo(64)
         }
         
         return (view, bag)

@@ -14,14 +14,22 @@ import MarkdownKit
 struct MarkdownText {
     let text: String
     let style: TextStyle
+    let intrinsicContentSizeSignal: ReadSignal<CGSize>
+    
+    private let intrinsicContentSizeReadWriteSignal = ReadWriteSignal<CGSize>(
+        CGSize(width: 0, height: 0)
+    )
+    
+    init(text: String, style: TextStyle) {
+        self.text = text
+        self.style = style
+        intrinsicContentSizeSignal = intrinsicContentSizeReadWriteSignal.readOnly()
+    }
+    
 }
 
 extension MarkdownText: Viewable {
-    func materialize(events: ViewableEvents) -> (UIView, Disposable) {
-        let view = UIScrollView()
-        view.alwaysBounceVertical = true
-        view.showsVerticalScrollIndicator = false
-        
+    func materialize(events: ViewableEvents) -> (UILabel, Disposable) {
         let bag = DisposeBag()
     
         let markdownParser = MarkdownParser(font: style.font, color: style.color)
@@ -39,28 +47,16 @@ extension MarkdownText: Viewable {
         markdownText.lineBreakMode = .byWordWrapping
         markdownText.baselineAdjustment = .none
         markdownText.attributedText = mutableAttributedString
-        
+
         bag += markdownText.didLayoutSignal.onValue { _ in
             markdownText.snp.remakeConstraints { make in
                 make.width.equalToSuperview()
                 make.centerX.equalToSuperview()
             }
             
-            view.contentSize = CGSize(
-                width: markdownText.intrinsicContentSize.width,
-                height: markdownText.intrinsicContentSize.height
-            )
+            self.intrinsicContentSizeReadWriteSignal.value = markdownText.intrinsicContentSize
         }
         
-        view.addSubview(markdownText)
-        
-        bag += view.didLayoutSignal.onValue { _ in
-            view.snp.remakeConstraints { make in
-                make.width.equalToSuperview()
-                make.height.equalToSuperview()
-            }
-        }
-        
-        return (view, bag)
+        return (markdownText, bag)
     }
 }

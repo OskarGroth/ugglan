@@ -15,13 +15,21 @@ struct CharityInformationBody {
 
 extension CharityInformationBody: Viewable {
     func materialize(events: ViewableEvents) -> (UIView, Disposable) {
-        let view = UIView()
+        let view = UIScrollView()
+        view.showsVerticalScrollIndicator = false
         
         let bag = DisposeBag()
         
         let body = MarkdownText(text: text, style: .bodyOffBlack)
         
         bag += view.add(body)
+        
+        bag += body.intrinsicContentSizeSignal.onValue { bodySize in
+            view.contentSize = CGSize(
+                width: bodySize.width,
+                height: bodySize.height
+            )
+        }
         
         bag += view.didLayoutSignal.onValue { _ in
             view.snp.remakeConstraints { make in

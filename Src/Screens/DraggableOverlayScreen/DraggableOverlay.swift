@@ -85,7 +85,7 @@ extension DraggableOverlay: Presentable {
         let fullscreenOverlayHeight: CGFloat = UIScreen.main.bounds.height - 60
         let overshootHeight: CGFloat = 800
         
-        let dragLimit = overlayHeight - UIScreen.main.bounds.height + 60
+        let dragLimit: CGFloat = overlayHeight - UIScreen.main.bounds.height + 60
         let velocityFactor: CGFloat = 1.35
         let slowVelocityFactor: CGFloat = 0.20
         
@@ -112,7 +112,6 @@ extension DraggableOverlay: Presentable {
         
         bag += panGestureRecognizer.signal(forState: .changed).onValue {
             let location = panGestureRecognizer.translation(in: view)
-            
             let hasPassedLimit = ease.targetValue! <= overlayCenter() + dragLimit
             
             if (hasPassedLimit) {

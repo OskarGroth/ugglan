@@ -136,6 +136,7 @@ extension DraggableOverlay: Presentable {
         bag += panGestureRecognizer.signal(forState: .ended).onValue { _ in
             ease.velocity = panGestureRecognizer.velocity(in: view).y
             ease.targetValue = overlayCenter()
+            self.content.canScrollSignal.value = false
         }
     
         bag += overlay.install(panGestureRecognizer)
@@ -193,7 +194,7 @@ extension DraggableOverlay: Presentable {
         
         embeddedChildScreen.view.snp.makeConstraints { make in
             make.width.equalToSuperview()
-            make.height.equalTo(UIScreen.main.bounds.height - 60 - 22)
+            make.height.equalTo(fullscreenOverlayHeight)
         }
         
         return (viewController, Future { completion in
@@ -242,7 +243,7 @@ extension DraggableOverlay: Presentable {
                 hideOverlay()
             }
             
-            return NilDisposer()
+            return bag
         })
     }
 }

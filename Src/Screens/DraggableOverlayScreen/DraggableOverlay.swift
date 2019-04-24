@@ -11,22 +11,25 @@ import UIKit
 import Flow
 import Ease
 
-struct DraggableOverlay<P: Presentable, PMatter: UIViewController> where P.Result == Disposable, P.Matter == PMatter {
-    let presentable: P
+struct DraggableOverlay {
+    let content: DraggableOverlayContent
     let presentationOptions: PresentationOptions
     let backgroundColor: UIColor
     let heightPercentage: CGFloat
+    let fullscreenSupported: Bool
     
     init(
-        presentable: P,
+        content: DraggableOverlayContent,
         presentationOptions: PresentationOptions = .defaults,
         backgroundColor: UIColor = .white,
-        heightPercentage: CGFloat = 0.5
+        heightPercentage: CGFloat = 0.5,
+        fullscreenSupported: Bool = true
     ) {
-        self.presentable = presentable
+        self.content = content
         self.presentationOptions = presentationOptions
         self.backgroundColor = backgroundColor
         self.heightPercentage = heightPercentage
+        self.fullscreenSupported = fullscreenSupported
     }
 }
 
@@ -137,7 +140,7 @@ extension DraggableOverlay: Presentable {
     
         bag += overlay.install(panGestureRecognizer)
         
-        let (childScreen, childDisposable) = presentable.materialize()
+        let (childScreen, childDisposable) = content.materialize()
         childScreen.setLargeTitleDisplayMode(presentationOptions)
         
         let embeddedChildScreen = childScreen.embededInNavigationController(presentationOptions)
@@ -204,10 +207,12 @@ extension DraggableOverlay: Presentable {
             
             func togglePreview() {
                 ease.targetValue = overlayCenter()
+                self.content.canScrollSignal.value = false
             }
             
             func toggleFullScreen() {
                 ease.targetValue = overlayCenter() + dragLimit
+                self.content.canScrollSignal.value = true
             }
             
             bag += panGestureRecognizer.signal(forState: .ended).onValue { _ in
@@ -226,7 +231,7 @@ extension DraggableOverlay: Presentable {
                     hideOverlay()
                 } else if (fastSwipe) {
                     fullscreenMode ? togglePreview() : hideOverlay()
-                } else if (translation.y < -45) {
+                } else if (translation.y < -45 && self.fullscreenSupported) {
                     toggleFullScreen()
                 }
                 
@@ -237,7 +242,7 @@ extension DraggableOverlay: Presentable {
                 hideOverlay()
             }
             
-            return bag
+            return NilDisposer()
         })
     }
 }

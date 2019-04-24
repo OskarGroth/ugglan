@@ -1,8 +1,8 @@
 //
-//  DraggableViewHeader.swift
+//  DraggableOverlayHeader.swift
 //  ugglan
 //
-//  Created by Gustaf Gunér on 2019-03-28.
+//  Created by Gustaf Gunér on 2019-04-24.
 //
 
 import Foundation
@@ -11,6 +11,12 @@ import UIKit
 
 struct DraggableOverlayHeader {
     let title: String
+    let icon: ImageAsset?
+    
+    init(title: String, icon: ImageAsset? = nil) {
+        self.title = title
+        self.icon = icon
+    }
 }
 
 extension DraggableOverlayHeader: Viewable {
@@ -18,6 +24,18 @@ extension DraggableOverlayHeader: Viewable {
         let view = UIView()
         
         let bag = DisposeBag()
+        
+        if (self.icon != nil) {
+            let icon = Icon(icon: self.icon!, iconWidth: 60)
+            view.addSubview(icon)
+            
+            icon.snp.makeConstraints { make in
+                make.width.equalTo(60)
+                make.height.equalTo(60)
+                make.leading.equalToSuperview().inset(24)
+                make.top.equalToSuperview().inset(24)
+            }
+        }
         
         let titleLabel = UILabel()
         titleLabel.style = .standaloneLargeTitle
@@ -33,7 +51,7 @@ extension DraggableOverlayHeader: Viewable {
                 make.width.equalToSuperview().inset(24)
                 make.height.equalTo(24)
                 make.centerX.equalToSuperview()
-                make.bottom.equalTo(-8)
+                make.bottom.equalTo(0)
             }
         }
         
@@ -42,11 +60,6 @@ extension DraggableOverlayHeader: Viewable {
         titleContainer.snp.makeConstraints { make in
             make.width.equalToSuperview()
             make.height.equalToSuperview()
-        }
-        
-        view.makeConstraints(wasAdded: events.wasAdded).onValue { make, _ in
-            make.width.equalToSuperview()
-            make.height.equalTo(64)
         }
         
         return (view, bag)

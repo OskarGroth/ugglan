@@ -34,9 +34,13 @@ extension CharityInformationButton: Viewable {
         bag += button.onTapSignal.onValue {_ in
             self.presentingViewController.present(
                 DraggableOverlay(
-                    presentable: CharityInformation(),
+                    content: DraggableOverlayContent(
+                        title: String(key: .PROFILE_MY_CHARITY_INFO_TITLE),
+                        body: String(key: .PROFILE_MY_CHARITY_INFO_BODY)
+                    ),
                     presentationOptions: [.defaults, .prefersLargeTitles(false), .largeTitleDisplayMode(.never), .prefersNavigationBarHidden(true)],
-                    heightPercentage: 0.55
+                    heightPercentage: 0.60,
+                    fullscreenSupported: true
                 )
             )
         }

@@ -1,22 +1,24 @@
 //
-//  CharityInformationBody.swift
+//  DraggableOverlayText.swift
 //  ugglan
 //
-//  Created by Gustaf Gunér on 2019-04-04.
+//  Created by Gustaf Gunér on 2019-04-24.
 //
 
 import Foundation
 import Flow
 import UIKit
 
-struct CharityInformationBody {
+struct DraggableOverlayText {
     let text: String
+    let intrinsicContentSizeSignal = ReadWriteSignal<CGSize>(
+        CGSize(width: 0, height: 0)
+    )
 }
 
-extension CharityInformationBody: Viewable {
+extension DraggableOverlayText: Viewable {
     func materialize(events: ViewableEvents) -> (UIView, Disposable) {
-        let view = UIScrollView()
-        view.showsVerticalScrollIndicator = false
+        let view = UIView()
         
         let bag = DisposeBag()
         
@@ -25,10 +27,7 @@ extension CharityInformationBody: Viewable {
         bag += view.add(body)
         
         bag += body.intrinsicContentSizeSignal.onValue { bodySize in
-            view.contentSize = CGSize(
-                width: bodySize.width,
-                height: bodySize.height
-            )
+            self.intrinsicContentSizeSignal.value = bodySize
         }
         
         bag += view.didLayoutSignal.onValue { _ in

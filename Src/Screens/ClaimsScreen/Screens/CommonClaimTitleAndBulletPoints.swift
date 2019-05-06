@@ -23,7 +23,6 @@ extension CommonClaimTitleAndBulletPoints: Presentable {
 
         let view = UIStackView()
         view.axis = .vertical
-        view.backgroundColor = .offWhite
 
         commonClaimCard.backgroundStateSignal.value = .expanded
         commonClaimCard.cornerRadiusSignal.value = 0
@@ -45,15 +44,24 @@ extension CommonClaimTitleAndBulletPoints: Presentable {
             bag += view.addArranged(BulletPointTable(
                 bulletPoints: bulletPoints
             )) { tableView in
+                tableView.hero.modifiers = [
+                    .forceAnimate,
+                    .useNormalSnapshot,
+                    .spring(stiffness: 250, damping: 35),
+                    .whenPresenting(.source(heroID: "\(commonClaimCard.data.title)_contentView")),
+                    .whenDismissing(.scale(x: 0, y: 0, z: 0))
+                ]
+
                 bag += tableView.didLayoutSignal.onValue { _ in
                     tableView.snp.remakeConstraints { make in
-                        make.height.equalTo(tableView.contentSize.height + 20)
+                        make.height.equalTo(tableView.contentSize.height + 500 + 20)
                     }
                 }
             }
         }
 
         bag += viewController.install(view) { scrollView in
+            scrollView.backgroundColor = .clear
             bag += scrollView.contentOffsetSignal.bindTo(self.commonClaimCard.scrollPositionSignal)
 
             if #available(iOS 11.0, *) {

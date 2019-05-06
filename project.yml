@@ -144,6 +144,7 @@ targets:
           - $(SRCROOT)/Carthage/Build/iOS/UICollectionView_AnimatedScroll.framework
           - $(SRCROOT)/Carthage/Build/iOS/MarkdownKit.framework
           - $(SRCROOT)/Carthage/Build/iOS/Ease.framework
+          - $(SRCROOT)/Carthage/Build/iOS/Hero.framework
         outputs:
           - $(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/DeviceKit.framework
           - $(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/Apollo.framework
@@ -163,6 +164,7 @@ targets:
           - $(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/UICollectionView_AnimatedScroll.framework
           - $(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/MarkdownKit.framework
           - $(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/Ease.framework
+          - $(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/Hero.framework
     references:
       - sdkroot:UIKit.framework
       - location: Carthage/Build/iOS/DeviceKit.framework
@@ -201,6 +203,7 @@ targets:
       - location: Carthage/Build/iOS/UICollectionView_AnimatedScroll.framework
       - location: Carthage/Build/iOS/MarkdownKit.framework
       - location: Carthage/Build/iOS/Ease.framework
+      - location: Carthage/Build/iOS/Hero.framework
     configuration:
       INFOPLIST_FILE: Src/Info.plist
       IPHONEOS_DEPLOYMENT_TARGET: "10.0"

@@ -10,6 +10,7 @@ import Form
 import Foundation
 import Presentation
 import UIKit
+import Hero
 
 struct CommonClaimCard {
     let data: CommonClaimsQuery.Data.CommonClaim
@@ -121,6 +122,8 @@ extension CommonClaimCard: Viewable {
         contentView.layer.shadowOffset = CGSize(width: 0, height: 16)
         contentView.layer.shadowRadius = 30
         contentView.layer.shadowColor = UIColor.black.cgColor
+        contentView.hero.id = "\(data.title)_contentView"
+        contentView.hero.modifiers = [.useGlobalCoordinateSpace, .spring(stiffness: 250, damping: 35)]
 
         view.addArrangedSubview(contentView)
 
@@ -147,6 +150,8 @@ extension CommonClaimCard: Viewable {
         let titleLabel = UILabel(value: data.title, style: .rowTitle)
         titleLabel.layer.zPosition = 2
         contentView.addSubview(titleLabel)
+        titleLabel.hero.
+        titleLabel.hero.modifiers = [.whenPresenting(.fade)]
 
         bag += scrollPositionSignal.onValue { point in
             titleLabel.transform = CGAffineTransform(translationX: 0, y: point.y)
@@ -218,6 +223,8 @@ extension CommonClaimCard: Viewable {
         remoteVectorIcon.pdfUrl.value = pdfUrl
 
         bag += contentView.add(remoteVectorIcon) { imageView in
+            imageView.hero.id = "\(data.title)_imageView"
+            imageView.hero.modifiers = [.spring(stiffness: 250, damping: 35)]
             imageView.snp.makeConstraints { make in
                 make.top.equalToSuperview()
                 make.left.equalToSuperview().inset(15)
@@ -266,6 +273,12 @@ extension CommonClaimCard: Viewable {
         bag += view.add(closeButton) { closeButtonView in
             bag += showCloseButton.atOnce().map { !$0 }.bindTo(closeButtonView, \.isHidden)
             bag += showCloseButton.atOnce().map { $0 ? 1 : 0 }.bindTo(closeButtonView, \.alpha)
+            
+            closeButtonView.hero.modifiers = [
+                .forceAnimate,
+                .whenPresenting(.delay(0.25), .fade),
+                .whenDismissing(.fade),
+            ]
 
             closeButtonView.snp.makeConstraints { make in
                 make.left.equalTo(10)
@@ -290,6 +303,15 @@ extension CommonClaimCard: Viewable {
             )
 
             bag += view.add(claimButton) { claimButtonView in
+                claimButtonView.hero.modifiers = [
+                    .forceAnimate,
+                    .useLayerRenderSnapshot,
+                    .opacity(0),
+                    .spring(stiffness: 200, damping: 25),
+                    .whenAppearing(.delay(0.4), .translate(x: 0, y: 100, z: 0)),
+                    .whenDismissing(.scale(x: 0, y: 0, z: 0))
+                ]
+                
                 bag += showClaimButtonSignal.atOnce().map { !$0 }.bindTo(claimButtonView, \.isHidden)
                 bag += showClaimButtonSignal.atOnce().map { $0 ? 1 : 0 }.bindTo(claimButtonView, \.alpha)
 
@@ -314,13 +336,8 @@ extension CommonClaimCard: Viewable {
                     ),
                     options: [],
                     configure: { vc, bag in
-                        let newCommonClaimCard = CommonClaimCard(data: self.data, index: self.index, presentingViewController: self.presentingViewController)
-                        let delegate = CardControllerTransitioningDelegate(
-                            originView: contentView,
-                            commonClaimCard: newCommonClaimCard
-                        )
-                        bag.hold(delegate)
-                        vc.transitioningDelegate = delegate
+                        vc.hero.isEnabled = true
+                        vc.hero.modalAnimationType = .none
                     }
                 )
             }
